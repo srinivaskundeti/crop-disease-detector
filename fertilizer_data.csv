@@ -1,5 +1,5 @@
 Disease_Name,Fertilizer,Dosage,Preventive_Tips
 Healthy_Leaf,No treatment needed,-,Continue regular monitoring and balanced fertilization
-Blotch,Copper Oxychloride 50% WP,3g per litre water,Remove and destroy infected leaves, avoid water stagnation
-Leaf_Spot,Mancozeb 75% WP,2.5g per litre water,Ensure proper field drainage, avoid overhead irrigation
-Aphids_Disease,Imidacloprid 17.8% SL,0.3ml per litre water,Use yellow sticky traps, encourage natural predators
+Blotch,Copper Oxychloride 50% WP,3g per litre water,"Remove and destroy infected leaves; avoid water stagnation"
+Leaf_Spot,Mancozeb 75% WP,2.5g per litre water,"Ensure proper field drainage; avoid overhead irrigation"
+Aphids_Disease,Imidacloprid 17.8% SL,0.3ml per litre water,"Use yellow sticky traps; encourage natural predators"
