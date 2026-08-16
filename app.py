@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from tensorflow.keras.models import load_model
 import numpy as np
 import pandas as pd
@@ -8,6 +9,7 @@ from PIL import Image
 import io
 
 app = Flask(__name__)
+CORS(app)
 
 # ---------- LOAD MODEL AND DATA ----------
 model = load_model('plant_disease_model.h5')
