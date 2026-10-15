@@ -1,13 +1,15 @@
 
+import os
+import io
+import requests
+import numpy as np
+import pandas as pd
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from tensorflow.keras.models import load_model
-import numpy as np
-import pandas as pd
 from googletrans import Translator
-import requests
 from PIL import Image
-import io
 
 app = Flask(__name__)
 CORS(app)
@@ -26,8 +28,8 @@ class_labels = [
 translator = Translator()
 
 # ---------- TELEGRAM CONFIG ----------
-BOT_TOKEN = "YOUR_NEW_TELEGRAM_BOT_TOKEN"
-CHAT_ID = "5982626821"
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+CHAT_ID = os.environ.get("CHAT_ID", "5982626821")
 TARGET_LANG = "te"
 
 @app.route('/predict', methods=['POST'])
@@ -42,6 +44,7 @@ def predict():
             }), 400
 
         img_file = request.files['image']
+
         img = Image.open(
             io.BytesIO(img_file.read())
         ).convert('RGB')
@@ -50,10 +53,10 @@ def predict():
         img_array = np.array(img) / 255.0
         img_array = np.expand_dims(img_array, axis=0)
 
-        # ---------- PREDICT DISEASE ----------
+        # ---------- PREDICT ----------
         prediction = model.predict(img_array, verbose=0)
 
-        predicted_index = np.argmax(prediction)
+        predicted_index = int(np.argmax(prediction))
         predicted_class = class_labels[predicted_index]
         confidence = round(
             float(np.max(prediction)) * 100, 2
@@ -62,8 +65,7 @@ def predict():
         # ---------- CONFIDENCE CHECK ----------
         if confidence < 70:
             message = (
-                "No clear turmeric leaf detected, or "
-                "prediction is uncertain. Please upload "
+                "Prediction is uncertain. Please upload "
                 "a clear image of a turmeric leaf."
             )
 
@@ -119,16 +121,23 @@ def predict():
 
 
 def send_telegram_message(message):
-    url = (
-        f"https://api.telegram.org/bot"
-        f"{BOT_TOKEN}/sendMessage"
-    )
+    if not BOT_TOKEN:
+        raise ValueError(
+            "BOT_TOKEN is missing from environment variables"
+        )
 
-    requests.post(
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+
+    response = requests.post(
         url,
-        data={"chat_id": CHAT_ID, "text": message},
+        data={
+            "chat_id": CHAT_ID,
+            "text": message
+        },
         timeout=15
     )
+
+    response.raise_for_status()
 
 
 @app.route('/', methods=['GET'])
